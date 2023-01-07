@@ -1,3 +1,5 @@
+
+import sys
 class Hero:
     def __init__(self, position, land):
         self.land = land
@@ -38,6 +40,17 @@ class Hero:
         base.accept('q'+"-repeat", self.turn_left)
         base.accept('e', self.turn_right)
         base.accept('e' + "-repeat", self.turn_right)
+        base.accept('w', self.forward)
+        base.accept('w' + '-repeat', self.forward)
+        base.accept('s', self.backward)
+        base.accept('s' + '-repeat', self.backward)
+        base.accept('a', self.left)
+        base.accept('a' + '-repeat', self.left)
+        base.accept('d', self.right)
+        base.accept('d' + '-repeat', self.right)
+        # taskMgr.add(self.controlCamera, 'camera-task')
+        base.accept("escape", sys.exit)
+
 
     def changeView(self):
         if self.cameraToFace:
@@ -47,19 +60,19 @@ class Hero:
 
     def turn_left(self):
         # angle = self.hero.getH()+ 5 * self.multiplier
-        self.hero.setH(-190*self.lastx % 360)
+        self.hero.setH(-200*self.lastx % 360)
 
     def turn_right(self):
         # angle = self.hero.getH() - 5 * self.multiplier
-        self.hero.setH(-190*self.lastx % 360)
+        self.hero.setH(-200*self.lastx % 360)
 
     def turn_up(self):
         # angle = self.hero.getH()+ 5 * self.multiplier
-        self.hero.setP(-90*self.lasty % 360)
+        self.hero.setP(-100*self.lasty % 360)
 
     def turn_down(self):
         # angle = self.hero.getH() - 5 * self.multiplier
-        self.hero.setP(-90*self.lasty % 360)
+        self.hero.setP(-100*self.lasty % 360)
 
     def getmouse(self, task):
         if base.mouseWatcherNode.hasMouse():
@@ -83,5 +96,58 @@ class Hero:
             #     self.multiplier = abs(self.lastx-x) * 10
             self.lastx = x
             self.lasty = y
-
         return task.again
+
+
+    def move(self, angle):
+        pos = self.get_angle(angle)
+        self.hero.setPos(pos)
+
+
+    def fly(self):
+        pass
+
+
+    def difference_angle(self, angle):
+        if angle >=0 and angle < 20 or angle >= 335 and angle < 360:
+            return 0,-1
+        elif angle >= 20 and angle < 65:
+            return 1, -1
+        elif angle >= 65 and angle < 110:
+            return 1, 0
+        elif angle >= 110 and angle < 155:
+            return 1, 1
+        elif angle >= 155 and angle < 200:
+            return 0, 1
+        elif angle >= 200 and angle < 245:
+            return -1, 1
+        elif angle >= 245 and angle < 290:
+            return -1, 0
+        elif angle >= 290 and angle < 335:
+            return -1, -1
+
+
+    def get_angle(self, angle):
+        from_x, from_y, from_z = round(self.hero.getPos())
+        dx, dy = self.difference_angle(angle)
+
+        return from_x + dx, from_y + dy, from_z
+
+    def forward(self):
+        angle = (self.hero.getH()+0) % 360
+        self.move(angle)
+
+    def backward(self):
+        angle = (self.hero.getH()+ 180) % 360
+        self.move(angle)
+
+    def left(self):
+        angle = (self.hero.getH()+90) % 360
+        self.move(angle)
+
+    def right(self):
+        angle = (self.hero.getH()+270) % 360
+        self.move(angle)
+
+
+
